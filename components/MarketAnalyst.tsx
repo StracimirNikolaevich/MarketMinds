@@ -298,14 +298,28 @@ export const MarketDashboard: React.FC<MarketDashboardProps> = React.memo(({ onA
   return (
     <div className={`flex flex-col h-full ${isDarkMode ? 'bg-slate-950 text-slate-200' : 'bg-[#f5f5f5] text-slate-900'} overflow-y-auto font-sans scrollbar-hide`}>
       {/* Top Navigation / Header */}
-      <div className="p-4 md:p-6 border-b border-slate-200 bg-white sticky top-0 z-20 shadow-sm">
+      <div
+        className={`p-4 md:p-6 border-b sticky top-0 z-20 shadow-sm ${
+          isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200'
+        }`}
+      >
         <div className="flex flex-col xl:flex-row justify-between items-center gap-4 md:gap-6 max-w-7xl mx-auto w-full">
           
           <div className="flex-shrink-0 text-center xl:text-left w-full xl:w-auto">
-            <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight flex items-center justify-center xl:justify-start gap-2">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">Global Markets</span>
+            <h1
+              className={`text-2xl md:text-3xl font-bold tracking-tight flex items-center justify-center xl:justify-start gap-2 ${
+                isDarkMode ? 'text-white' : 'text-slate-900'
+              }`}
+            >
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">Global Markets</span>
             </h1>
-            <p className="text-slate-500 text-[10px] md:text-xs font-medium uppercase tracking-widest mt-1">Real-time Data & Intelligence</p>
+            <p
+              className={`text-[10px] md:text-xs font-medium uppercase tracking-widest mt-1 ${
+                isDarkMode ? 'text-slate-400' : 'text-slate-500'
+              }`}
+            >
+              Real-time Data & Intelligence
+            </p>
           </div>
 
           {/* Search Bar */}
@@ -313,17 +327,29 @@ export const MarketDashboard: React.FC<MarketDashboardProps> = React.memo(({ onA
               <div className="relative group">
                   <input 
                       type="text" 
-                      className="w-full bg-white border border-slate-300 rounded-full py-2.5 md:py-3 pl-10 md:pl-12 pr-10 md:pr-12 text-sm md:text-base text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 placeholder-slate-400 transition-all shadow-sm"
+                      className={`w-full rounded-full py-2.5 md:py-3 pl-10 md:pl-12 pr-10 md:pr-12 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all shadow-sm border ${
+                        isDarkMode
+                          ? 'bg-slate-900 border-slate-700 text-slate-100 placeholder-slate-500'
+                          : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
+                      }`}
                       placeholder="Search Quote, Index, or Crypto (e.g. NVDA, BTC)..."
                       value={searchQuery}
                       onChange={e => setSearchQuery(e.target.value)}
                   />
-                  <i className="fas fa-search absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors text-sm md:text-base"></i>
+                  <i
+                    className={`fas fa-search absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 text-sm md:text-base transition-colors ${
+                      isDarkMode ? 'text-slate-500 group-focus-within:text-blue-400' : 'text-slate-400 group-focus-within:text-blue-500'
+                    }`}
+                  ></i>
                   {searchQuery && (
                       <button 
                           type="button"
                           onClick={clearSearch}
-                          className="absolute right-3 md:right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-700 p-1 rounded-full hover:bg-slate-100 transition-all"
+                          className={`absolute right-3 md:right-4 top-1/2 transform -translate-y-1/2 p-1 rounded-full transition-all ${
+                            isDarkMode
+                              ? 'text-slate-500 hover:text-slate-200 hover:bg-slate-800'
+                              : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
+                          }`}
                       >
                           <i className="fas fa-times"></i>
                       </button>
@@ -333,13 +359,17 @@ export const MarketDashboard: React.FC<MarketDashboardProps> = React.memo(({ onA
 
           <div className="flex items-center gap-3 md:gap-4 flex-shrink-0 justify-between w-full xl:w-auto">
              <div className="flex items-center gap-3">
-               <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-full">
+               <div
+                 className={`flex items-center gap-1.5 px-2 py-1 rounded-full border ${
+                   isDarkMode ? 'bg-emerald-950/40 border-emerald-500/40' : 'bg-emerald-50 border-emerald-200'
+                 }`}
+               >
                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                 <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">LIVE</span>
+                 <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">LIVE</span>
                </div>
                <div className="flex flex-col items-start xl:items-end text-left xl:text-right">
-                  <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Auto-updating</span>
-                  <span className="text-xs text-slate-600 font-mono">
+                  <span className={`text-[10px] uppercase font-bold tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Auto-updating</span>
+                  <span className={`text-xs font-mono ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                     {lastRefreshed ? lastRefreshed.toLocaleTimeString() : '--:--:--'}
                   </span>
                </div>
@@ -347,7 +377,11 @@ export const MarketDashboard: React.FC<MarketDashboardProps> = React.memo(({ onA
              <button 
                onClick={() => refreshAll(false)}
                disabled={tabLoading || newsLoading}
-               className="p-2.5 md:p-3 bg-white hover:bg-slate-50 text-blue-600 rounded-full transition-colors shadow border border-slate-200 disabled:opacity-60"
+               className={`p-2.5 md:p-3 rounded-full transition-colors shadow border disabled:opacity-60 ${
+                 isDarkMode
+                   ? 'bg-slate-900 hover:bg-slate-800 text-blue-400 border-slate-700'
+                   : 'bg-white hover:bg-slate-50 text-blue-600 border-slate-200'
+               }`}
                title="Refresh Data"
              >
                <i className={`fas fa-sync-alt ${tabLoading || newsLoading ? 'animate-spin' : ''}`}></i>
@@ -362,27 +396,57 @@ export const MarketDashboard: React.FC<MarketDashboardProps> = React.memo(({ onA
         {(searchResult || searchLoading || searchError) && (
             <div className="animate-fade-in mb-6 md:mb-8">
                 {searchLoading && (
-                   <div className="w-full bg-white rounded-xl border border-slate-200 p-6 animate-pulse h-48"></div>
+                   <div
+                     className={`w-full rounded-xl border p-6 animate-pulse h-48 ${
+                       isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+                     }`}
+                   ></div>
                 )}
 
                 {searchError && (
-                    <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-lg flex items-center gap-3">
+                    <div
+                      className={`p-4 border rounded-lg flex items-center gap-3 ${
+                        isDarkMode
+                          ? 'bg-rose-950/40 border-rose-500/40 text-rose-200'
+                          : 'bg-rose-50 border-rose-200 text-rose-700'
+                      }`}
+                    >
                         <i className="fas fa-exclamation-triangle"></i>
                         {searchError}
                     </div>
                 )}
 
                 {searchResult && !searchLoading && (
-                    <div className="bg-white rounded-xl border border-slate-200 shadow overflow-hidden relative group hover:border-slate-300 transition-colors">
-                        <div className="absolute top-0 left-0 w-1 h-full bg-blue-500/80"></div>
+                    <div
+                      className={`rounded-xl border shadow overflow-hidden relative group transition-colors ${
+                        isDarkMode
+                          ? 'bg-slate-900 border-slate-800 hover:border-slate-600'
+                          : 'bg-white border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                        <div className="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
                         <div className="p-4 md:p-6 flex flex-col lg:flex-row justify-between items-stretch gap-6">
                             
                             {/* Left: Info */}
                             <div className="flex-1 flex flex-col justify-center">
                                 <div className="flex items-center justify-between mb-1">
                                   <div className="flex items-center gap-3">
-                                    <h2 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">{searchResult.symbol}</h2>
-                                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 uppercase border border-slate-200">Real-Time</span>
+                                    <h2
+                                      className={`text-3xl md:text-4xl font-bold tracking-tight ${
+                                        isDarkMode ? 'text-white' : 'text-slate-900'
+                                      }`}
+                                    >
+                                      {searchResult.symbol}
+                                    </h2>
+                                    <span
+                                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
+                                        isDarkMode
+                                          ? 'bg-slate-800 text-slate-200 border-slate-600'
+                                          : 'bg-slate-100 text-slate-600 border-slate-200'
+                                      }`}
+                                    >
+                                      Real-Time
+                                    </span>
                                   </div>
                                   
                                   {/* Add to Watchlist Button */}
@@ -396,10 +460,22 @@ export const MarketDashboard: React.FC<MarketDashboardProps> = React.memo(({ onA
                                   )}
                                 </div>
 
-                                <h3 className="text-base md:text-lg text-slate-600 font-medium mb-4 md:mb-6">{searchResult.name}</h3>
+                                <h3
+                                  className={`text-base md:text-lg font-medium mb-4 md:mb-6 ${
+                                    isDarkMode ? 'text-slate-300' : 'text-slate-600'
+                                  }`}
+                                >
+                                  {searchResult.name}
+                                </h3>
                                 
                                 <div className="flex items-baseline gap-4 mb-4">
-                                  <span className="text-5xl md:text-6xl font-bold text-slate-900 tracking-tighter">{searchResult.price}</span>
+                                  <span
+                                    className={`text-5xl md:text-6xl font-bold tracking-tighter ${
+                                      isDarkMode ? 'text-white' : 'text-slate-900'
+                                    }`}
+                                  >
+                                    {searchResult.price}
+                                  </span>
                                 </div>
                                 <div className={`flex items-center gap-3 ${searchResult.isPositive ? 'text-emerald-400' : 'text-rose-500'}`}>
                                     <span className="text-xl md:text-2xl font-bold flex items-center gap-1">
@@ -423,11 +499,15 @@ export const MarketDashboard: React.FC<MarketDashboardProps> = React.memo(({ onA
                             </div>
 
                             {/* Right: Detailed Chart */}
-                            <div className="flex-[1.5] min-h-[280px] md:min-h-[320px] bg-white rounded-lg p-4 md:p-6 relative border border-slate-200 flex flex-col">
+                            <div
+                              className={`flex-[1.5] min-h-[280px] md:min-h-[320px] rounded-lg p-4 md:p-6 relative border flex flex-col ${
+                                isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+                              }`}
+                            >
                                 <div className="flex flex-col gap-3 mb-3">
                                   <div className="flex justify-between items-start">
                                     <div>
-                                       <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">Price History</span>
+                                       <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Price History</span>
                                        <span className="text-[10px] text-slate-500">{TIME_RANGE_LABELS[selectedTimeRange]}</span>
                                     </div>
                                     <div className="flex gap-2">
@@ -447,7 +527,9 @@ export const MarketDashboard: React.FC<MarketDashboardProps> = React.memo(({ onA
                                         className={`px-2.5 py-1 text-[10px] font-bold rounded transition-all ${
                                           selectedTimeRange === range
                                             ? 'bg-blue-600 text-white shadow-sm'
-                                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                                            : isDarkMode
+                                              ? 'bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white'
+                                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
                                         } ${historyLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                       >
                                         {range === 'MAX' ? 'ALL' : range}
@@ -563,15 +645,23 @@ export const MarketDashboard: React.FC<MarketDashboardProps> = React.memo(({ onA
 
         {/* Market Tabs */}
         <div>
-          <div className="flex overflow-x-auto scrollbar-hide border-b border-slate-200 mb-4 md:mb-6 gap-1 bg-white rounded-t-lg px-1">
+          <div
+            className={`flex overflow-x-auto scrollbar-hide border-b mb-4 md:mb-6 gap-1 rounded-t-lg px-1 ${
+              isDarkMode ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-white'
+            }`}
+          >
             {(Object.keys(MARKET_CATEGORIES) as MarketTab[]).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-4 md:px-6 py-2 md:py-3 text-xs font-semibold uppercase tracking-wide whitespace-nowrap transition-all relative ${
                   activeTab === tab 
-                    ? 'text-blue-600' 
-                    : 'text-slate-500 hover:text-slate-700'
+                    ? isDarkMode
+                      ? 'text-blue-400'
+                      : 'text-blue-600'
+                    : isDarkMode
+                      ? 'text-slate-400 hover:text-slate-100'
+                      : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
                 {tab}
@@ -586,26 +676,61 @@ export const MarketDashboard: React.FC<MarketDashboardProps> = React.memo(({ onA
             {tabLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {Array(6).fill(0).map((_, i) => (
-                   <div key={i} className="bg-white border border-slate-200 h-32 rounded-lg animate-pulse"></div>
+                   <div
+                     key={i}
+                     className={`h-32 rounded-lg animate-pulse border ${
+                       isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+                     }`}
+                   ></div>
                 ))}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {marketData[activeTab]?.map((item) => (
-                  <div key={item.symbol} className="bg-white border border-slate-200 rounded-lg p-4 md:p-5 hover:border-blue-200 transition-all hover:bg-blue-50/40 group cursor-pointer" onClick={() => { setSearchQuery(item.symbol); setActiveSearchTerm(item.symbol); handleSearchFetch(item.symbol); }}>
+                  <div
+                    key={item.symbol}
+                    className={`rounded-lg p-4 md:p-5 transition-all group cursor-pointer border ${
+                      isDarkMode
+                        ? 'bg-slate-900 border-slate-800 hover:border-blue-500/60 hover:bg-slate-900/80'
+                        : 'bg-white border-slate-200 hover:border-blue-200 hover:bg-blue-50/40'
+                    }`}
+                    onClick={() => { setSearchQuery(item.symbol); setActiveSearchTerm(item.symbol); handleSearchFetch(item.symbol); }}
+                  >
                       <div className="flex justify-between items-start mb-3">
                         <div className="overflow-hidden flex-1">
-                          <h4 className="text-slate-900 font-semibold truncate pr-2 group-hover:text-blue-600 transition-colors">{item.name}</h4>
+                          <h4
+                            className={`font-semibold truncate pr-2 group-hover:text-blue-400 transition-colors ${
+                              isDarkMode ? 'text-slate-100' : 'text-slate-900'
+                            }`}
+                          >
+                            {item.name}
+                          </h4>
                           <span className="text-xs text-slate-500 font-mono">{item.symbol}</span>
                         </div>
                         {/* Trend indicator */}
-                        <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${item.isPositive ? 'bg-emerald-50' : 'bg-rose-50'}`}>
-                          <i className={`fas fa-arrow-trend-${item.isPositive ? 'up text-emerald-500' : 'down text-rose-500'}`}></i>
+                        <div
+                          className={`flex items-center justify-center w-8 h-8 rounded-lg ${
+                            item.isPositive
+                              ? isDarkMode
+                                ? 'bg-emerald-500/10'
+                                : 'bg-emerald-50'
+                              : isDarkMode
+                                ? 'bg-rose-500/10'
+                                : 'bg-rose-50'
+                          }`}
+                        >
+                          <i className={`fas fa-arrow-trend-${item.isPositive ? 'up text-emerald-400' : 'down text-rose-400'}`}></i>
                         </div>
                       </div>
                       <div className="flex items-end justify-between">
-                         <span className="text-xl font-bold text-slate-900">{item.price}</span>
-                         <div className={`text-sm font-medium text-right ${item.isPositive ? 'text-emerald-600' : 'text-rose-600'}`}>
+                         <span
+                           className={`text-xl font-bold ${
+                             isDarkMode ? 'text-slate-50' : 'text-slate-900'
+                           }`}
+                         >
+                           {item.price}
+                         </span>
+                         <div className={`text-sm font-medium text-right ${item.isPositive ? 'text-emerald-500' : 'text-rose-500'}`}>
                             <div className="flex items-center justify-end gap-1">
                               <span>{item.change}</span>
                               <i className={`fas fa-caret-${item.isPositive ? 'up' : 'down'}`}></i>
@@ -628,7 +753,11 @@ export const MarketDashboard: React.FC<MarketDashboardProps> = React.memo(({ onA
 
         {/* News Section */}
         <div className="pt-6 md:pt-8 border-t border-slate-200">
-            <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-4 md:mb-6 flex items-center gap-2">
+            <h3
+              className={`text-lg md:text-xl font-bold mb-4 md:mb-6 flex items-center gap-2 ${
+                isDarkMode ? 'text-slate-100' : 'text-slate-900'
+              }`}
+            >
               <span className="w-1 h-6 bg-blue-500 rounded-full"></span>
               Market Intelligence
             </h3>
@@ -637,21 +766,52 @@ export const MarketDashboard: React.FC<MarketDashboardProps> = React.memo(({ onA
               <div className="lg:col-span-2 space-y-4">
                 {newsLoading ? (
                   Array(3).fill(0).map((_, i) => (
-                    <div key={i} className="bg-white border border-slate-200 h-24 rounded-lg animate-pulse"></div>
+                    <div
+                      key={i}
+                      className={`h-24 rounded-lg animate-pulse border ${
+                        isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+                      }`}
+                    ></div>
                   ))
                 ) : (
                   news.map((item, idx) => (
-                    <div key={idx} className="bg-white border border-slate-200 rounded-lg p-4 hover:border-blue-200 transition-all flex gap-4 group cursor-pointer" onClick={() => window.open(item.url, '_blank')}>
+                    <div
+                      key={idx}
+                      className={`rounded-lg p-4 flex gap-4 group cursor-pointer border transition-all ${
+                        isDarkMode
+                          ? 'bg-slate-900 border-slate-800 hover:border-blue-500/60'
+                          : 'bg-white border-slate-200 hover:border-blue-200'
+                      }`}
+                      onClick={() => window.open(item.url, '_blank')}
+                    >
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                           <span className="text-[10px] font-bold uppercase text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">{item.source}</span>
+                           <span
+                             className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${
+                               isDarkMode
+                                 ? 'text-slate-200 bg-slate-800 border-slate-600'
+                                 : 'text-slate-600 bg-slate-100 border-slate-200'
+                             }`}
+                           >
+                             {item.source}
+                           </span>
                            <span className="text-xs text-slate-500"><i className="far fa-clock mr-1"></i>{item.time}</span>
                         </div>
-                        <h4 className="text-base md:text-lg font-medium text-slate-900 leading-snug group-hover:text-blue-600 transition-colors">
+                        <h4
+                          className={`text-base md:text-lg font-medium leading-snug group-hover:text-blue-400 transition-colors ${
+                            isDarkMode ? 'text-slate-100' : 'text-slate-900'
+                          }`}
+                        >
                           {item.title}
                         </h4>
                       </div>
-                      <div className="hidden sm:flex flex-col justify-center items-center w-12 border-l border-slate-200 pl-4 text-slate-400 group-hover:text-blue-500 transition-colors">
+                      <div
+                        className={`hidden sm:flex flex-col justify-center items-center w-12 border-l pl-4 transition-colors ${
+                          isDarkMode
+                            ? 'border-slate-700 text-slate-500 group-hover:text-blue-400'
+                            : 'border-slate-200 text-slate-400 group-hover:text-blue-500'
+                        }`}
+                      >
                          <i className="fas fa-chevron-right"></i>
                       </div>
                     </div>
@@ -660,16 +820,38 @@ export const MarketDashboard: React.FC<MarketDashboardProps> = React.memo(({ onA
               </div>
               
               {/* Sources Sidebar */}
-              <div className="bg-white rounded-xl p-6 border border-slate-200 h-fit shadow-sm">
-                 <h4 className="text-sm font-bold text-slate-700 uppercase tracking-widest mb-4">Data Sources</h4>
+              <div
+                className={`rounded-xl p-6 border h-fit shadow-sm ${
+                  isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+                }`}
+              >
+                 <h4
+                   className={`text-sm font-bold uppercase tracking-widest mb-4 ${
+                     isDarkMode ? 'text-slate-100' : 'text-slate-700'
+                   }`}
+                 >
+                   Data Sources
+                 </h4>
                  <div className="space-y-3">
                     {sources.length > 0 ? sources.slice(0, 8).map((source, i) => (
-                      <a key={i} href={source.url} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs text-blue-400/80 hover:text-blue-400 transition-colors truncate">
+                      <a
+                        key={i}
+                        href={source.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={`flex items-center gap-2 text-xs transition-colors truncate ${
+                          isDarkMode
+                            ? 'text-blue-300 hover:text-blue-200'
+                            : 'text-blue-400/80 hover:text-blue-400'
+                        }`}
+                      >
                         <i className="fas fa-link text-[10px] opacity-50"></i>
                         <span className="truncate">{source.title}</span>
                       </a>
                     )) : (
-                      <p className="text-xs text-slate-600 italic">Sources will appear here after data is fetched.</p>
+                      <p className={`text-xs italic ${isDarkMode ? 'text-slate-500' : 'text-slate-600'}`}>
+                        Sources will appear here after data is fetched.
+                      </p>
                     )}
                  </div>
               </div>

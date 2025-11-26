@@ -21,6 +21,11 @@ interface MarketAnalysis {
 class TradingAI {
   private marketData: Map<string, MarketData> = new Map();
   private historyCache: Map<string, HistoricalDataPoint[]> = new Map();
+  private portfolioPositions: Record<string, number> = {};
+
+  setPortfolioPositions(map: Record<string, number>) {
+    this.portfolioPositions = map || {};
+  }
 
   // Parse numeric values from strings
   private parseNum(val: string): number {
@@ -1077,6 +1082,45 @@ I'm having trouble fetching live market data right now. This could be due to:
       response += `${stock.symbol} is consolidating. Watch for a decisive break above $${levels.resistance.toFixed(2)} or below $${levels.support.toFixed(2)}.`;
     }
     
+    // Portfolio-aware context
+    const holdingQty = this.portfolioPositions[stock.symbol.toUpperCase()] || 0;
+    if (holdingQty > 0) {
+      // Approximate concentration using tracked positions only
+      let totalValue = 0;
+      const symbols = Object.keys(this.portfolioPositions);
+      for (const sym of symbols) {
+        const qty = this.portfolioPositions[sym] || 0;
+        if (qty <= 0) continue;
+        let d = this.marketData.get(sym);
+        if (!d) {
+          const res = await fetchMarketData([sym]);
+          if (res.data[0]) {
+            d = res.data[0];
+            this.marketData.set(sym.toUpperCase(), d);
+          }
+        }
+        if (d) {
+          const price = this.parseNum(d.price);
+          totalValue += price * qty;
+        }
+      }
+
+      const stockValue = currentPrice * holdingQty;
+      const pct = totalValue > 0 ? (stockValue / totalValue) * 100 : 0;
+
+      response += `\n\n📦 **Your holding in ${stock.symbol}:** ~${holdingQty} shares.`;
+      if (pct > 0) {
+        response += ` This is roughly ${pct.toFixed(1)}% of your tracked portfolio.`;
+        if (pct > 40) {
+          response += `\n⚠️ Very concentrated position. Think about trimming or diversifying.`;
+        } else if (pct > 25) {
+          response += `\n⚠️ High concentration. Make sure you are comfortable with this risk.`;
+        }
+      }
+    } else {
+      response += `\n\n📦 You don't currently hold ${stock.symbol} in your simulated portfolio.`;
+    }
+    
     return response;
   }
 
@@ -1660,7 +1704,7 @@ Try: **"Add NVDA to my watchlist"**`,
       return `🗑️ **${symbol}** has been removed from your watchlist.`;
     }
     
-    // Add to portfolio patterns
+    // Add to portfolio patterns (with explicit quantity)
     const addPortfolioMatch = lowerMsg.match(/(?:add|buy|purchase)\s+(\d+\.?\d*)\s*(?:shares?\s+(?:of\s+)?)?([a-z]{1,5})\s+(?:to|in)\s*(?:my\s*)?(?:portfolio)/i)
       || lowerMsg.match(/(?:portfolio)\s+(?:add|buy)\s+(\d+\.?\d*)\s+([a-z]{1,5})/i)
       || lowerMsg.match(/(?:buy|add)\s+(\d+\.?\d*)\s+([a-z]{1,5})/i);
@@ -1673,6 +1717,15 @@ Try: **"Add NVDA to my watchlist"**`,
       }
       onAddToPortfolio(symbol, quantity);
       return `✅ Added **${quantity} shares of ${symbol}** to your portfolio!\n\nView your holdings in the Portfolio tab.`;
+    }
+
+    // Add to portfolio without explicit quantity (default 1 share)
+    const addPortfolioNoQtyMatch = lowerMsg.match(/(?:buy|purchase)\s+([a-z]{1,5})(?:\s+(?:shares?|stock|stocks))?\s*(?:to|in)?\s*(?:my\s*)?(?:portfolio)?/i);
+    if (!addPortfolioMatch && addPortfolioNoQtyMatch && onAddToPortfolio) {
+      const symbol = addPortfolioNoQtyMatch[1].toUpperCase();
+      const quantity = 1;
+      onAddToPortfolio(symbol, quantity);
+      return `✅ Bought **${quantity} share of ${symbol}** for your portfolio (default quantity).\n\nYou can adjust the position in the Portfolio tab.`;
     }
     
     // Show watchlist
@@ -1880,8 +1933,12 @@ Say: "Create a beginner portfolio" for safer picks to study.`;
           }
         });
         const enrichedInput = contextLines.length > 0
-          ? `${contextLines.join('\n')}\n\n${userInput}`
+          ? `${contextLines.join('\n')}
+
+${userInput}`
           : userInput;
+        // Pass latest portfolio into AI so deep analysis can comment on concentration
+        aiRef.current.setPortfolioPositions(portfolioPositionMap);
         response = await aiRef.current.generateResponse(enrichedInput);
       }
       
@@ -1948,25 +2005,33 @@ Try: **"Add NVDA to my watchlist"**`,
   return (
     <div className={`flex flex-col h-full ${isDarkMode ? 'bg-slate-950 text-slate-200' : 'bg-[#f5f5f5] text-slate-900'}`}>
       {/* Header */}
-      <div className="p-4 md:p-6 border-b border-slate-200 bg-white">
+      <div
+        className={`p-4 md:p-6 border-b ${
+          isDarkMode ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-white'
+        }`}
+      >
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow">
             <i className="fas fa-robot text-white"></i>
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-900">Stockie</h1>
-            <p className="text-xs text-slate-500">Your AI trading copilot</p>
+            <h1 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Stockie</h1>
+            <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Your AI trading copilot</p>
             <p className="text-[10px] text-slate-400 mt-0.5">Educational only · Not financial advice</p>
           </div>
           <div className="ml-auto flex items-center gap-3">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-              <span className="text-xs text-emerald-600">Live</span>
+              <span className={`text-xs ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>Live</span>
             </div>
             <button
               type="button"
               onClick={handleResetChat}
-              className="text-[10px] px-2 py-1 rounded-full border border-slate-300 text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+              className={`text-[10px] px-2 py-1 rounded-full border transition-colors ${
+                isDarkMode
+                  ? 'border-slate-600 text-slate-300 hover:text-white hover:bg-slate-800'
+                  : 'border-slate-300 text-slate-500 hover:text-slate-900 hover:bg-slate-100'
+              }`}
               title="Reset chat"
             >
               Reset
@@ -1986,7 +2051,9 @@ Try: **"Add NVDA to my watchlist"**`,
               className={`max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-3 ${
                 msg.role === 'user'
                   ? 'bg-blue-600 text-white rounded-br-sm'
-                  : 'bg-white border border-slate-200 text-slate-900 rounded-bl-sm'
+                  : isDarkMode
+                    ? 'bg-slate-800 border border-slate-700 text-slate-100 rounded-bl-sm'
+                    : 'bg-white border border-slate-200 text-slate-900 rounded-bl-sm'
               }`}
             >
               <div className="text-sm whitespace-pre-wrap leading-relaxed">
@@ -1994,7 +2061,15 @@ Try: **"Add NVDA to my watchlist"**`,
                   i % 2 === 1 ? <strong key={i}>{part}</strong> : part
                 )}
               </div>
-              <div className={`text-[10px] mt-2 ${msg.role === 'user' ? 'text-blue-100' : 'text-slate-400'}`}>
+              <div
+                className={`text-[10px] mt-2 ${
+                  msg.role === 'user'
+                    ? 'text-blue-100'
+                    : isDarkMode
+                      ? 'text-slate-500'
+                      : 'text-slate-400'
+                }`}
+              >
                 {msg.timestamp.toLocaleTimeString()}
               </div>
             </div>
@@ -2003,12 +2078,20 @@ Try: **"Add NVDA to my watchlist"**`,
         
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-white border border-slate-200 rounded-2xl rounded-bl-sm px-4 py-3">
+            <div
+              className={`rounded-2xl rounded-bl-sm px-4 py-3 border ${
+                isDarkMode
+                  ? 'bg-slate-800 border-slate-700'
+                  : 'bg-white border-slate-200'
+              }`}
+            >
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-violet-500 rounded-full animate-bounce"></div>
                 <div className="w-2 h-2 bg-violet-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                 <div className="w-2 h-2 bg-violet-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <span className="text-xs text-slate-500 ml-2">Analyzing markets...</span>
+                <span className={`text-xs ml-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                  Analyzing markets...
+                </span>
               </div>
             </div>
           </div>
@@ -2018,13 +2101,21 @@ Try: **"Add NVDA to my watchlist"**`,
       </div>
 
       {/* Quick Prompts */}
-      <div className="px-4 py-2 border-t border-slate-200 bg-slate-50">
+      <div
+        className={`px-4 py-2 border-t ${
+          isDarkMode ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-slate-50'
+        }`}
+      >
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
           {quickPrompts.map((prompt) => (
             <button
               key={prompt}
               onClick={() => setInput(prompt)}
-              className="flex-shrink-0 px-3 py-1.5 text-xs bg-white hover:bg-slate-100 text-slate-700 rounded-full border border-slate-200 transition-colors"
+              className={`flex-shrink-0 px-3 py-1.5 text-xs rounded-full border transition-colors ${
+                isDarkMode
+                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                  : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
+              }`}
             >
               {prompt}
             </button>
@@ -2033,14 +2124,23 @@ Try: **"Add NVDA to my watchlist"**`,
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSubmit} className="p-4 border-t border-slate-200 bg-white">
+      <form
+        onSubmit={handleSubmit}
+        className={`p-4 border-t ${
+          isDarkMode ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-white'
+        }`}
+      >
         <div className="flex gap-3">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about stocks, crypto, market trends..."
-            className="flex-1 bg-white border border-slate-300 rounded-xl px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500 transition-all"
+            className={`flex-1 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500 transition-all border ${
+              isDarkMode
+                ? 'bg-slate-900 border-slate-700 text-slate-100 placeholder-slate-500'
+                : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
+            }`}
             disabled={isLoading}
           />
           <button

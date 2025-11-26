@@ -88,10 +88,20 @@ export const Watchlist: React.FC<WatchlistProps & { isDarkMode?: boolean }> = ({
 
   return (
     <div className={`flex flex-col h-full ${isDarkMode ? 'bg-slate-950 text-slate-200' : 'bg-[#f5f5f5] text-slate-900'}`}>
-      <div className="p-6 border-b border-slate-200 bg-white flex justify-between items-center shadow-sm sticky top-0 z-10">
+      <div
+        className={`p-6 border-b flex justify-between items-center shadow-sm sticky top-0 z-10 ${
+          isDarkMode ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-white'
+        }`}
+      >
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">My Watchlist</h1>
-          <p className="text-slate-500 text-sm">Track your favorite stocks</p>
+          <h1
+            className={`text-2xl font-bold tracking-tight ${
+              isDarkMode ? 'text-slate-100' : 'text-slate-900'
+            }`}
+          >
+            My Watchlist
+          </h1>
+          <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Track your favorite stocks</p>
         </div>
         <form onSubmit={handleAddSubmit} className="flex gap-2">
           <input
@@ -99,7 +109,11 @@ export const Watchlist: React.FC<WatchlistProps & { isDarkMode?: boolean }> = ({
             value={newSymbol}
             onChange={(e) => setNewSymbol(e.target.value)}
             placeholder="Add Symbol (e.g. GOOGL)"
-            className="bg-white border border-slate-300 rounded-lg px-4 py-2 text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none text-sm placeholder-slate-400 uppercase"
+            className={`rounded-lg px-4 py-2 text-sm uppercase focus:ring-2 focus:ring-blue-500 outline-none border ${
+              isDarkMode
+                ? 'bg-slate-900 border-slate-700 text-slate-100 placeholder-slate-500'
+                : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
+            }`}
           />
           <button 
             type="submit"
@@ -111,11 +125,21 @@ export const Watchlist: React.FC<WatchlistProps & { isDarkMode?: boolean }> = ({
       </div>
 
       <div className="p-6 max-w-7xl mx-auto w-full">
-        <div className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow">
+        <div
+          className={`rounded-xl overflow-hidden border shadow ${
+            isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+          }`}
+        >
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wider">
+                <tr
+                  className={`text-xs uppercase tracking-wider border-b ${
+                    isDarkMode
+                      ? 'bg-slate-900 border-slate-800 text-slate-500'
+                      : 'bg-slate-50 border-slate-200 text-slate-500'
+                  }`}
+                >
                   <th className="p-4 font-medium">Symbol</th>
                   <th className="p-4 font-medium">Name</th>
                   <th className="p-4 font-medium text-right">Price</th>
@@ -124,7 +148,7 @@ export const Watchlist: React.FC<WatchlistProps & { isDarkMode?: boolean }> = ({
                   <th className="p-4 font-medium text-center">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className={`divide-y ${isDarkMode ? 'divide-slate-800' : 'divide-slate-100'}`}>
                 {loading && watchlist.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="p-8 text-center text-slate-500">
@@ -135,22 +159,24 @@ export const Watchlist: React.FC<WatchlistProps & { isDarkMode?: boolean }> = ({
                   watchlist.map((stock) => (
                     <tr 
                       key={stock.symbol} 
-                      className="hover:bg-slate-50 transition-colors group cursor-pointer"
+                      className={`transition-colors group cursor-pointer ${
+                        isDarkMode ? 'hover:bg-slate-900/60' : 'hover:bg-slate-50'
+                      }`}
                       onClick={() => openResearch(stock)}
                     >
-                      <td className="p-4 font-semibold text-slate-900 underline decoration-dotted underline-offset-4">{stock.symbol}</td>
-                      <td className="p-4 text-slate-700">{stock.name}</td>
-                      <td className="p-4 text-right font-mono font-medium text-slate-900">{stock.price}</td>
+                      <td className="p-4 font-semibold underline decoration-dotted underline-offset-4 text-slate-100">{stock.symbol}</td>
+                      <td className="p-4 text-slate-400">{stock.name}</td>
+                      <td className="p-4 text-right font-mono font-medium text-slate-100">{stock.price}</td>
                       <td className={`p-4 text-right font-mono font-medium ${stock.isPositive ? 'text-emerald-600' : 'text-rose-600'}`}>
                         {stock.change}
                       </td>
-                      <td className={`p-4 text-right font-mono font-medium ${stock.isPositive ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
+                      <td className={`p-4 text-right font-mono font-medium ${stock.isPositive ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
                         {stock.changePercent}
                       </td>
                       <td className="p-4 text-center" onClick={(e) => { e.stopPropagation(); }}>
                         <button 
                           onClick={() => onRemove(stock.symbol)}
-                          className="text-slate-400 hover:text-rose-500 transition-colors p-2"
+                          className="text-slate-500 hover:text-rose-400 transition-colors p-2"
                         >
                           <i className="fas fa-trash-alt"></i>
                         </button>
@@ -172,11 +198,19 @@ export const Watchlist: React.FC<WatchlistProps & { isDarkMode?: boolean }> = ({
       </div>
       {selected && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-xl">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
+          <div
+            className={`rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col border shadow-xl ${
+              isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+            }`}
+          >
+            <div
+              className={`flex items-center justify-between px-6 py-4 border-b ${
+                isDarkMode ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-slate-50'
+              }`}
+            >
               <div>
-                <h2 className="text-xl font-bold text-slate-900">{selected.symbol} Research</h2>
-                <p className="text-xs text-slate-500">1M price history & latest headlines</p>
+                <h2 className={`text-xl font-bold ${isDarkMode ? 'text-slate-100' : 'text-slate-900'}`}>{selected.symbol} Research</h2>
+                <p className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-slate-500'}`}>1M price history & latest headlines</p>
               </div>
               <div className="flex items-center gap-3">
                 <button
@@ -188,16 +222,28 @@ export const Watchlist: React.FC<WatchlistProps & { isDarkMode?: boolean }> = ({
                 </button>
                 <button
                   onClick={closeResearch}
-                  className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800"
+                  className={`w-8 h-8 flex items-center justify-center rounded-full ${
+                    isDarkMode
+                      ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-slate-50'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800'
+                  }`}
                 >
                   <i className="fas fa-times"></i>
                 </button>
               </div>
             </div>
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-0">
-              <div className="lg:col-span-2 border-b lg:border-b-0 lg:border-r border-slate-200 p-4">
-                <h3 className="text-xs font-bold text-slate-600 uppercase mb-2">1-Month Chart</h3>
-                <div className="w-full h-56 bg-white rounded-xl border border-slate-200 flex items-center justify-center">
+              <div
+                className={`lg:col-span-2 border-b lg:border-b-0 lg:border-r p-4 ${
+                  isDarkMode ? 'border-slate-800' : 'border-slate-200'
+                }`}
+              >
+                <h3 className="text-xs font-bold text-slate-500 uppercase mb-2">1-Month Chart</h3>
+                <div
+                  className={`w-full h-56 rounded-xl border flex items-center justify-center ${
+                    isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+                  }`}
+                >
                   {historyLoading ? (
                     <i className="fas fa-circle-notch fa-spin text-slate-400"></i>
                   ) : chartProps ? (
@@ -216,8 +262,12 @@ export const Watchlist: React.FC<WatchlistProps & { isDarkMode?: boolean }> = ({
                   )}
                 </div>
               </div>
-              <div className="border-t lg:border-t-0 border-slate-200 p-4 overflow-y-auto bg-slate-50/60">
-                <h3 className="text-xs font-bold text-slate-600 uppercase mb-2">Latest Headlines</h3>
+              <div
+                className={`border-t lg:border-t-0 p-4 overflow-y-auto ${
+                  isDarkMode ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-slate-50/60'
+                }`}
+              >
+                <h3 className="text-xs font-bold text-slate-500 uppercase mb-2">Latest Headlines</h3>
                 {newsLoading ? (
                   <div className="text-xs text-slate-500 flex items-center gap-2">
                     <i className="fas fa-circle-notch fa-spin"></i>

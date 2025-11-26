@@ -179,10 +179,26 @@ export const Portfolio: React.FC<PortfolioProps & { isDarkMode?: boolean }> = ({
   return (
     <div className={`flex flex-col h-full ${isDarkMode ? 'bg-slate-950 text-slate-200' : 'bg-[#f5f5f5] text-slate-900'} overflow-y-auto`}>
       {/* Header */}
-      <div className="p-6 border-b border-slate-200 bg-white flex flex-col md:flex-row justify-between items-center shadow-sm sticky top-0 z-10 gap-4">
+      <div
+        className={`p-6 border-b flex flex-col md:flex-row justify-between items-center shadow-sm sticky top-0 z-10 gap-4 ${
+          isDarkMode ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-white'
+        }`}
+      >
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Investment Portfolio</h1>
-          <p className="text-slate-500 text-sm">Track your asset allocation and performance</p>
+          <h1
+            className={`text-2xl font-bold tracking-tight ${
+              isDarkMode ? 'text-slate-100' : 'text-slate-900'
+            }`}
+          >
+            Investment Portfolio
+          </h1>
+          <p
+            className={`text-sm ${
+              isDarkMode ? 'text-slate-400' : 'text-slate-500'
+            }`}
+          >
+            Track your asset allocation and performance
+          </p>
           {largestPosition && (
             <p className="text-[11px] text-slate-500 mt-1">
               {items.length} assets · Largest: <span className="font-semibold text-slate-300">{largestPosition.symbol}</span>
@@ -199,13 +215,17 @@ export const Portfolio: React.FC<PortfolioProps & { isDarkMode?: boolean }> = ({
         <div className="flex items-center gap-4">
            <div className="text-right">
              <div className="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Total Value</div>
-             <div className="text-2xl font-bold text-emerald-600 font-mono">
+             <div className={`text-2xl font-bold font-mono ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
                {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(totalValue)}
              </div>
            </div>
            <button 
              onClick={() => fetchPortfolioData(items)}
-             className="p-3 bg-white hover:bg-slate-50 text-blue-600 rounded-full transition-colors border border-slate-200 shadow-sm disabled:opacity-60"
+             className={`p-3 rounded-full transition-colors border shadow-sm disabled:opacity-60 ${
+               isDarkMode
+                 ? 'bg-slate-900 hover:bg-slate-800 text-blue-400 border-slate-700'
+                 : 'bg-white hover:bg-slate-50 text-blue-600 border-slate-200'
+             }`}
              disabled={loading}
            >
              <i className={`fas fa-sync-alt ${loading ? 'animate-spin' : ''}`}></i>
@@ -219,8 +239,18 @@ export const Portfolio: React.FC<PortfolioProps & { isDarkMode?: boolean }> = ({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             {/* Allocation Chart */}
-            <div className="bg-white rounded-xl p-6 border border-slate-200 shadow flex flex-col">
-                 <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4">Allocation</h3>
+            <div
+              className={`rounded-xl p-6 border shadow flex flex-col ${
+                isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+              }`}
+            >
+                 <h3
+                   className={`text-sm font-bold uppercase tracking-wider mb-4 ${
+                     isDarkMode ? 'text-slate-200' : 'text-slate-700'
+                   }`}
+                 >
+                   Allocation
+                 </h3>
                  {totalValue > 0 ? (
                     <div className="flex-1 flex items-center justify-center gap-6">
                         <div className="w-32 h-32 md:w-40 md:h-40 relative flex-shrink-0">
@@ -246,9 +276,9 @@ export const Portfolio: React.FC<PortfolioProps & { isDarkMode?: boolean }> = ({
                                 <div key={i} className="flex items-center justify-between text-xs">
                                     <div className="flex items-center gap-2 overflow-hidden">
                                         <div className="w-2 h-2 rounded-full flex-shrink-0" style={{background: item.color}}></div>
-                                        <span className="font-semibold text-slate-800 truncate">{item.symbol}</span>
+                                        <span className={`font-semibold truncate ${isDarkMode ? 'text-slate-100' : 'text-slate-800'}`}>{item.symbol}</span>
                                     </div>
-                                    <span className="text-slate-600 font-mono">{(item.percent * 100).toFixed(1)}%</span>
+                                    <span className="text-slate-400 font-mono">{(item.percent * 100).toFixed(1)}%</span>
                                 </div>
                             ))}
                         </div>
@@ -262,30 +292,46 @@ export const Portfolio: React.FC<PortfolioProps & { isDarkMode?: boolean }> = ({
             </div>
 
             {/* Add Position Form */}
-            <div className="lg:col-span-2 bg-white rounded-xl p-6 border border-slate-200 shadow flex flex-col justify-center">
-              <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4 flex items-center gap-2">
-                <i className="fas fa-plus-circle text-blue-600"></i> Add New Position
+            <div
+              className={`lg:col-span-2 rounded-xl p-6 border shadow flex flex-col justify-center ${
+                isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+              }`}
+            >
+              <h3
+                className={`text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2 ${
+                  isDarkMode ? 'text-slate-200' : 'text-slate-700'
+                }`}
+              >
+                <i className="fas fa-plus-circle text-blue-500"></i> Add New Position
               </h3>
               <form onSubmit={handleAddPosition} className="flex flex-col md:flex-row gap-4 items-end">
                 <div className="flex-1 w-full">
-                  <label className="block text-xs text-slate-600 mb-1 font-semibold">Stock Symbol</label>
+                  <label className="block text-xs mb-1 font-semibold text-slate-400">Stock Symbol</label>
                   <input
                     type="text"
                     value={newSymbol}
                     onChange={(e) => setNewSymbol(e.target.value)}
                     placeholder="e.g. NVDA"
-                    className="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none uppercase placeholder-slate-400 font-mono transition-all"
+                    className={`w-full rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none uppercase font-mono transition-all border ${
+                      isDarkMode
+                        ? 'bg-slate-900 border-slate-700 text-slate-100 placeholder-slate-500'
+                        : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
+                    }`}
                   />
                 </div>
                 <div className="flex-1 w-full">
-                  <label className="block text-xs text-slate-600 mb-1 font-semibold">Quantity</label>
+                  <label className="block text-xs mb-1 font-semibold text-slate-400">Quantity</label>
                   <input
                     type="number"
                     value={newQuantity}
                     onChange={(e) => setNewQuantity(e.target.value)}
                     placeholder="0.00"
                     step="any"
-                    className="w-full bg-white border border-slate-300 rounded-lg px-4 py-3 text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none font-mono placeholder-slate-400 transition-all"
+                    className={`w-full rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none font-mono transition-all border ${
+                      isDarkMode
+                        ? 'bg-slate-900 border-slate-700 text-slate-100 placeholder-slate-500'
+                        : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
+                    }`}
                   />
                 </div>
                 <button 
@@ -300,15 +346,29 @@ export const Portfolio: React.FC<PortfolioProps & { isDarkMode?: boolean }> = ({
         </div>
 
         {/* Holdings Table */}
-        <div className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow">
-          <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-             <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider">Current Holdings</h3>
+        <div
+          className={`rounded-xl overflow-hidden border shadow ${
+            isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'
+          }`}
+        >
+          <div
+            className={`p-4 border-b flex justify-between items-center ${
+              isDarkMode ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-slate-50'
+            }`}
+          >
+             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400">Current Holdings</h3>
              <span className="text-[10px] text-slate-500">P&L assumes $100 cost basis per share.</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wider">
+                <tr
+                  className={`text-xs uppercase tracking-wider border-b ${
+                    isDarkMode
+                      ? 'bg-slate-900 border-slate-800 text-slate-500'
+                      : 'bg-slate-50 border-slate-200 text-slate-500'
+                  }`}
+                >
                   <th className="p-4 font-medium pl-6">Asset</th>
                   <th className="p-4 font-medium text-right">Quantity</th>
                   <th className="p-4 font-medium text-right">Last Price</th>
@@ -318,7 +378,7 @@ export const Portfolio: React.FC<PortfolioProps & { isDarkMode?: boolean }> = ({
                   <th className="p-4 font-medium text-center pr-6">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className={`divide-y ${isDarkMode ? 'divide-slate-800' : 'divide-slate-100'}`}>
                 {items.map((item, idx) => {
                   const data = marketDataMap[item.symbol];
                   const priceNum = data ? (currentPrices[item.symbol] ?? parsePriceToNumber(data.price)) : 0;
@@ -329,25 +389,30 @@ export const Portfolio: React.FC<PortfolioProps & { isDarkMode?: boolean }> = ({
                   const allocItem = allocationData.find(d => d.symbol === item.symbol);
                   
                   return (
-                    <tr key={`${item.symbol}-${idx}`} className="hover:bg-slate-50 transition-colors group">
+                    <tr
+                      key={`${item.symbol}-${idx}`}
+                      className={`transition-colors group ${
+                        isDarkMode ? 'hover:bg-slate-900/60' : 'hover:bg-slate-50'
+                      }`}
+                    >
                       <td className="p-4 pl-6">
                         <div className="flex items-center gap-3">
                           {allocItem && (
                               <div className="w-1 h-8 rounded-full" style={{background: allocItem.color}}></div>
                           )}
                           <div className="flex flex-col">
-                            <span className="font-semibold text-slate-900 text-lg">{item.symbol}</span>
+                            <span className="font-semibold text-lg text-slate-100">{item.symbol}</span>
                             <span className="text-xs text-slate-500">{data?.name || 'Loading...'}</span>
                           </div>
                         </div>
                       </td>
-                      <td className="p-4 text-right font-mono text-slate-700">
+                      <td className="p-4 text-right font-mono text-slate-400">
                         {item.quantity.toLocaleString()}
                       </td>
-                      <td className="p-4 text-right font-mono text-slate-800">
-                        {data ? data.price : <span className="text-slate-400 animate-pulse">---</span>}
+                      <td className="p-4 text-right font-mono text-slate-200">
+                        {data ? data.price : <span className="text-slate-500 animate-pulse">---</span>}
                       </td>
-                      <td className={`p-4 text-right font-mono font-medium ${data?.isPositive ? 'text-emerald-600' : 'text-rose-600'}`}>
+                      <td className={`p-4 text-right font-mono font-medium ${data?.isPositive ? 'text-emerald-500' : 'text-rose-500'}`}>
                         {data ? (
                           <div className="flex flex-col items-end">
                             <span>{data.change}</span>
@@ -355,16 +420,16 @@ export const Portfolio: React.FC<PortfolioProps & { isDarkMode?: boolean }> = ({
                           </div>
                         ) : '--'}
                       </td>
-                      <td className="p-4 text-right font-mono font-bold text-slate-900 bg-slate-50">
+                      <td className="p-4 text-right font-mono font-bold bg-slate-900/40 text-slate-50">
                         {data ? formatCurrency(value.toString()) : '--'}
                       </td>
-                      <td className={`p-4 text-right font-mono font-bold ${unrealizedPnl >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                      <td className={`p-4 text-right font-mono font-bold ${unrealizedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                         {data ? formatCurrency(unrealizedPnl.toString()) : '--'}
                       </td>
                       <td className="p-4 text-center pr-6">
                         <button 
                           onClick={() => handleRemovePosition(idx)}
-                          className="text-slate-400 hover:text-rose-500 transition-colors p-2 rounded-full hover:bg-rose-50"
+                          className="text-slate-500 hover:text-rose-400 transition-colors p-2 rounded-full hover:bg-rose-900/30"
                           title="Remove Position"
                         >
                           <i className="fas fa-trash-alt"></i>
@@ -384,10 +449,14 @@ export const Portfolio: React.FC<PortfolioProps & { isDarkMode?: boolean }> = ({
                 )}
               </tbody>
               {items.length > 0 && (
-                <tfoot className="bg-slate-50 border-t border-slate-200 font-bold">
+                <tfoot
+                  className={`font-bold border-t ${
+                    isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'
+                  }`}
+                >
                   <tr>
                     <td colSpan={4} className="p-4 text-right text-slate-500 uppercase text-xs tracking-wider">Total Portfolio Value</td>
-                    <td className="p-4 text-right font-mono text-emerald-700 text-lg">
+                    <td className={`p-4 text-right font-mono text-lg ${isDarkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
                       {formatCurrency(totalValue.toString())}
                     </td>
                     <td></td>
