@@ -1,0 +1,5 @@
+{
+  "name": "MarketMinds Financial Terminal",
+  "description": "A real-time financial market dashboard powered by Gemini Search Grounding, featuring live market data, news aggregation, and portfolio tracking.",
+  "requestFramePermissions": []
+}
